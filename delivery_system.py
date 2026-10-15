@@ -7,6 +7,7 @@ orders = {}
 menu = {}
 VALID_STATUSES = ("placed", "cooking", "out_for_delivery", "delivered")
 
+
 def create_order(customer, items, order_history=None):
     """Create a valid order and optionally append its ID to a history."""
     if not isinstance(customer, str) or not customer.strip():
@@ -19,10 +20,16 @@ def create_order(customer, items, order_history=None):
         raise ValueError(f"Unknown menu items: {', '.join(unknown_items)}")
     order_id = max(orders, default=0) + 1
     total = sum(menu[item] for item in items)
-    orders[order_id] = {"customer": customer, "items": items, "total": total, "status": "placed"}
+    orders[order_id] = {
+        "customer": customer,
+        "items": items,
+        "total": total,
+        "status": "placed",
+    }
     if order_history is not None:
         order_history.append(order_id)
     return order_id
+
 
 def update_order_status(order_id, status):
     """Update a known order to a supported delivery status."""
@@ -31,6 +38,7 @@ def update_order_status(order_id, status):
     if status not in VALID_STATUSES:
         raise ValueError(f"Invalid order status: {status}")
     orders[order_id]["status"] = status
+
 
 def read_menu_config(file="menu.json"):
     """Load a menu, falling back when the file is missing or unreadable."""
@@ -42,15 +50,20 @@ def read_menu_config(file="menu.json"):
     menu.clear()
     menu.update(loaded_menu)
 
+
 def daily_revenue():
     """Return the total value of delivered orders only."""
-    return sum(order["total"] for order in orders.values()
-               if order["status"] == "delivered")
+    return sum(
+        order["total"] for order in orders.values()
+        if order["status"] == "delivered"
+    )
+
 
 def backup_orders(file="orders.json"):
     """Save the current queue as JSON without executable serialization."""
     with open(file, "w", encoding="utf-8") as backup_file:
         json.dump(orders, backup_file, indent=2)
+
 
 def restore_orders(file="orders.json"):
     """Restore JSON data, preserving integer IDs and checking its shape."""
@@ -69,6 +82,7 @@ def restore_orders(file="orders.json"):
     orders.clear()
     orders.update(restored_orders)
 
+
 def _valid_saved_order(order):
     """Check backup records before allowing them into the live queue."""
     if not isinstance(order, dict):
@@ -84,11 +98,13 @@ def _valid_saved_order(order):
         and order.get("status") in VALID_STATUSES
     )
 
+
 def print_queue():
     """Display each order and its current delivery status."""
     print(f"Order queue at {datetime.now()}")
     for order_id, order in orders.items():
         print(order_id, order["customer"], order["status"], order["total"])
+
 
 def main():
     """Demonstrate valid orders, rejected input, revenue and backups."""
@@ -110,6 +126,7 @@ def main():
     backup_orders()
     restore_orders()
     print_queue()
+
 
 if __name__ == "__main__":
     main()

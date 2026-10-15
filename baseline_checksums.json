@@ -1,0 +1,14 @@
+{
+  "pylint": {
+    "exit_code": 28,
+    "sha256": "6f968cea5bc51724445d2a26d4ab8ef028cd0026b1988b76bbf8a5ec21bf0eaa"
+  },
+  "bandit": {
+    "exit_code": 1,
+    "sha256": "78a3111c18ad7cd956afb8144c65b52199661ed750a7dfbee0a51576a579ecd1"
+  },
+  "flake8": {
+    "exit_code": 1,
+    "sha256": "b82eae9012d1218ae1e73aeb36f2fdc2db80d2cfe6ead962cf652d26ea44a2c0"
+  }
+}
