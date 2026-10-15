@@ -1,7 +1,6 @@
-﻿"""Manage a food delivery order queue and its daily revenue."""
+"""Manage a food delivery order queue and its daily revenue."""
 
 import json
-import pickle
 from datetime import datetime
 
 orders = {}
@@ -48,17 +47,42 @@ def daily_revenue():
     return sum(order["total"] for order in orders.values()
                if order["status"] == "delivered")
 
-def backup_orders(file="orders.pkl"):
-    """Save the current order queue to disk."""
-    with open(file, "wb") as backup_file:
-        pickle.dump(orders, backup_file)
+def backup_orders(file="orders.json"):
+    """Save the current queue as JSON without executable serialization."""
+    with open(file, "w", encoding="utf-8") as backup_file:
+        json.dump(orders, backup_file, indent=2)
 
-def restore_orders(file="orders.pkl"):
-    """Restore the order queue from disk."""
-    with open(file, "rb") as backup_file:
-        restored_orders = pickle.load(backup_file)
+def restore_orders(file="orders.json"):
+    """Restore JSON data, preserving integer IDs and checking its shape."""
+    with open(file, encoding="utf-8") as backup_file:
+        saved_orders = json.load(backup_file)
+    if not isinstance(saved_orders, dict):
+        raise ValueError("Backup must contain an order dictionary")
+    restored_orders = {}
+    for key, order in saved_orders.items():
+        if not key.isdecimal() or int(key) <= 0:
+            raise ValueError("Order IDs must be positive integers")
+        order_id = int(key)
+        if order_id in restored_orders or not _valid_saved_order(order):
+            raise ValueError("Backup contains an invalid or duplicate order")
+        restored_orders[order_id] = order
     orders.clear()
     orders.update(restored_orders)
+
+def _valid_saved_order(order):
+    """Check backup records before allowing them into the live queue."""
+    if not isinstance(order, dict):
+        return False
+    customer = order.get("customer")
+    items = order.get("items")
+    total = order.get("total")
+    return (
+        isinstance(customer, str) and bool(customer.strip())
+        and isinstance(items, list) and bool(items)
+        and all(isinstance(item, str) and bool(item) for item in items)
+        and type(total) in (int, float) and 0 <= total < float("inf")
+        and order.get("status") in VALID_STATUSES
+    )
 
 def print_queue():
     """Display each order and its current delivery status."""
