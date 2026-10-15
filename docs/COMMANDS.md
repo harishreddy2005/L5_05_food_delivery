@@ -1,4 +1,4 @@
-﻿# Commands executed and reproduction
+# Commands executed and reproduction
 
 Working folder: `C:\L5_05_food_delivery`. Commands use Windows PowerShell.
 
@@ -65,5 +65,36 @@ git commit -m "style: resolve flake8 violations"
 ```
 
 Final verification uses git diff --check, git status --short,
-git log -3 --format="%h %s", and git rev-list --count 13d7380..HEAD.
-No push command was executed.
+git log -4 --format="%h %s", and git rev-list --count 13d7380..HEAD.
+The student subsequently authorized committing the organized documentation and
+pushing to origin/main; see the submission commands below.
+
+## Current file locations
+
+Run the commands above from the repository root. Source and tests remain there,
+so their invocation is unchanged. Reports were generated before this folder
+organization and moved without changing their contents:
+
+- `reports/before/`: the three original reports; never overwrite these.
+- `reports/after/`: the three final reports.
+- `reports/baseline_checksums.json`: baseline hashes and original exit codes.
+- `evidence/`: program-before, program-after and test output.
+- `docs/`: lab report, issue tables, reflection and this command record.
+
+Folder organization was checked with baseline SHA-256 comparison, a Markdown
+link check, `git diff --check`, and `python -m unittest discover -v` using .venv.
+The moves and later documentation edits are included in a separate documentation
+commit, preserving the original three code-fix commits.
+
+## Submission commands
+
+```powershell
+git add -A
+git commit -m "docs: organize lab deliverables and complete reflection"
+git push origin main
+git status --short
+git ls-remote origin refs/heads/main
+```
+
+The documentation commit brings the total to four new commits: three code-fix
+commits and one documentation-only commit. No force push or history rewrite is used.
